@@ -122,6 +122,8 @@ abstract class BasicSeekbar extends StatefulWidget {
 
   ///进度改变的回调
   final ValueChanged<ProgressValue> onValueChanged;
+ //进度条拖动结束的回调
+  final ValueDragEnd<ProgressValue> onValueDragEnd;
   // final void Function(double) onValueChanged;
 
   ///进度条是否是圆角的，还是方形的，默认是圆角的
