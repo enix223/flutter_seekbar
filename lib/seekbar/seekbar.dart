@@ -122,9 +122,11 @@ abstract class BasicSeekbar extends StatefulWidget {
 
   ///进度改变的回调
   final ValueChanged<ProgressValue> onValueChanged;
- //进度条拖动结束的回调
-  final ValueDragEnd<ProgressValue> onValueDragEnd;
   // final void Function(double) onValueChanged;
+
+  //进度条拖动结束的回调
+  final ValueChanged<ProgressValue> onValueDragEnd;
+
 
   ///进度条是否是圆角的，还是方形的，默认是圆角的
   final bool isRound;
@@ -154,6 +156,7 @@ abstract class BasicSeekbar extends StatefulWidget {
       this.indicatorRadius,
       this.indicatorColor,
       this.onValueChanged,
+      this.onValueDragEnd,
       this.isRound})
       : super(key: key);
 
@@ -568,6 +571,7 @@ class SeekBar extends BasicSeekbar {
   SeekBar({
     Key key,
     ValueChanged<ProgressValue> onValueChanged,
+    ValueChanged<ProgressValue> onValueDragEnd,
     double min = 0.0,
     double max = 100.0,
     double progresseight,
@@ -620,6 +624,7 @@ class SeekBar extends BasicSeekbar {
         super(
           key: key,
           onValueChanged: onValueChanged,
+          onValueDragEnd:onValueDragEnd,
           min: min,
           max: max,
           progresseight: progresseight,
@@ -681,7 +686,7 @@ class _SeekBarState extends State<SeekBar> {
   ///气泡的总高度
   double bubbleHeight;
   bool _alwaysShowBubble;
-
+  double realValue = 0.0;
   double length;
   double e;
   double start;
@@ -853,6 +858,11 @@ class _SeekBarState extends State<SeekBar> {
         _afterDragShowSectionText = true;
       }
     });
+    
+    if (widget.onValueDragEnd != null) {
+      ProgressValue v = ProgressValue(progress: _value, value: realValue);
+      widget.onValueDragEnd(v);
+    }
   }
 
   void _setValue() {
@@ -876,7 +886,7 @@ class _SeekBarState extends State<SeekBar> {
         _value = start;
       }
     }
-    double realValue = length * _value + widget.min; //真实的值
+    realValue = length * _value + widget.min; //真实的值
 
     if (widget.onValueChanged != null) {
       ProgressValue v = ProgressValue(progress: _value, value: realValue);
