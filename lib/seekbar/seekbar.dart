@@ -776,6 +776,7 @@ class _SeekBarState extends State<SeekBar> {
 
   // Updates height and value when user taps on the SeekBar.
   void _onTapUp(TapUpDetails tapDetails) {
+    
     RenderBox renderBox = context.findRenderObject();
     setState(() {
       touchPoint = new Offset(
@@ -794,6 +795,7 @@ class _SeekBarState extends State<SeekBar> {
   }
 
   void _onPanDown(DragDownDetails details) {
+  
     RenderBox box = context.findRenderObject();
     touchPoint = box.globalToLocal(details.globalPosition);
     //防止绘画越界
@@ -821,10 +823,15 @@ class _SeekBarState extends State<SeekBar> {
         _afterDragShowSectionText = false;
       }
     });
+    if (widget.onValueDragEnd != null) {
+      ProgressValue v = ProgressValue(progress: _value, value: realValue);
+      widget.onValueDragEnd(v);
+    }
   }
 
   // Updates height and value when user drags the SeekBar.
   void _onPanUpdate(DragUpdateDetails dragDetails) {
+    
     RenderBox box = context.findRenderObject();
     touchPoint = box.globalToLocal(dragDetails.globalPosition);
     //防止绘画越界
@@ -842,7 +849,6 @@ class _SeekBarState extends State<SeekBar> {
     }
     setState(() {
       _value = touchPoint.dx / context.size.width;
-
       _setValue();
     });
   }
@@ -892,6 +898,7 @@ class _SeekBarState extends State<SeekBar> {
       ProgressValue v = ProgressValue(progress: _value, value: realValue);
       widget.onValueChanged(v);
     }
+    
   }
 
   @override
