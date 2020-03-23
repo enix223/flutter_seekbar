@@ -127,6 +127,7 @@ abstract class BasicSeekbar extends StatefulWidget {
   //进度条拖动结束的回调
   final ValueChanged<ProgressValue> onValueDragEnd;
 
+  //余数是否为0，针对double除不尽的问题优化
   final bool isRemainderZero;
 
   ///进度条是否是圆角的，还是方形的，默认是圆角的
@@ -503,6 +504,11 @@ class _SeekBarPainter extends CustomPainter {
       canvas.drawPath(bubblePath, paint);
 
       double realValue = (max - min) * value + min;
+      if(_SeekBarState.currentProgressInit){
+        _SeekBarState.currentProgerss = ProgressValue(progress: value, value: realValue);
+        print("_SeekBarState.currentProgerss init: ${_SeekBarState.currentProgerss.value}");
+        _SeekBarState.currentProgressInit = false;
+      }
       int rv = realValue.ceil();
       String text = '$rv';
       double fontsize = bubbleTextSize;
@@ -663,6 +669,9 @@ class _SeekBarState extends State<SeekBar> {
   double _value;
   bool _afterDragShowSectionText;
 
+  static ProgressValue currentProgerss;
+
+  static bool currentProgressInit = true;
   ///高度
   double progresseight;
 
@@ -796,6 +805,14 @@ class _SeekBarState extends State<SeekBar> {
         _afterDragShowSectionText = true;
       }
     });
+    if (widget.onValueDragEnd != null) {
+      ProgressValue v = ProgressValue(progress: _value, value: realValue);
+      if(currentProgerss.value != v.value){
+        print(("当前的 ontap:${v.value}"));
+        currentProgerss = ProgressValue(progress: _value, value: realValue);
+        widget.onValueDragEnd(v);
+      }
+    }
   }
 
   void _onPanDown(DragDownDetails details) {
@@ -827,10 +844,6 @@ class _SeekBarState extends State<SeekBar> {
         _afterDragShowSectionText = false;
       }
     });
-    if (widget.onValueDragEnd != null) {
-      ProgressValue v = ProgressValue(progress: _value, value: realValue);
-      widget.onValueDragEnd(v);
-    }
   }
 
   // Updates height and value when user drags the SeekBar.
@@ -871,6 +884,8 @@ class _SeekBarState extends State<SeekBar> {
 
     if (widget.onValueDragEnd != null) {
       ProgressValue v = ProgressValue(progress: _value, value: realValue);
+      print(("当前的 _onPanEnd:${v.value}"));
+      currentProgerss = ProgressValue(progress: _value, value: realValue);
       widget.onValueDragEnd(v);
     }
   }
@@ -906,6 +921,7 @@ class _SeekBarState extends State<SeekBar> {
 
     if (widget.onValueChanged != null) {
       ProgressValue v = ProgressValue(progress: _value, value: realValue);
+
       widget.onValueChanged(v);
     }
 
