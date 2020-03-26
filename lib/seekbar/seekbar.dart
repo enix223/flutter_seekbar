@@ -504,11 +504,6 @@ class _SeekBarPainter extends CustomPainter {
       canvas.drawPath(bubblePath, paint);
 
       double realValue = (max - min) * value + min;
-      if(_SeekBarState.currentProgressInit){
-        _SeekBarState.currentProgerss = ProgressValue(progress: value, value: realValue);
-        print("_SeekBarState.currentProgerss init: ${_SeekBarState.currentProgerss.value}");
-        _SeekBarState.currentProgressInit = false;
-      }
       int rv = realValue.ceil();
       String text = '$rv';
       double fontsize = bubbleTextSize;
@@ -531,7 +526,7 @@ class _SeekBarPainter extends CustomPainter {
                   bubbleInCenterY
                   : -newBubbleHeight + bubbleRadius - textSize.height / 2));
     }
-
+    
     drawSectionText(); // draw section text 画刻度值
 
     drawBar(value.clamp(0.0, 1.0) * size.width, value); //画进度
@@ -539,6 +534,13 @@ class _SeekBarPainter extends CustomPainter {
 
     drawIndicator(); //draw indicator
     drawTopBubble(); //draw top bubble
+
+    double realValue = (max - min) * value + min;
+    if(_SeekBarState.currentProgressInit){
+      _SeekBarState.currentProgerss = ProgressValue(progress: value, value: realValue);
+      print("_SeekBarState.currentProgerss init: ${_SeekBarState.currentProgerss.value}");
+      _SeekBarState.currentProgressInit = false;
+    }
   }
 
   @override
